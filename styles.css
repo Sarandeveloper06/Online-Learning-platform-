@@ -1,0 +1,4 @@
+body { font-family: Arial; text-align: center; background: #f9f9f9; }
+nav a { margin: 10px; text-decoration: none; color: orange; }
+form input, form select, form button { margin: 5px; padding: 8px; }
+ul { list-style: none; padding: 0; }
