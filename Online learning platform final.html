@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LearnX - Your Friendly Online Learning Platform</title>
+<style>
+  /* Base Reset & Typography */
+  * {
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  body {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fefefe;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  /* HEADER */
+  header {
+    background: #2c2c54;
+    padding: 18px 30px;
+    position: sticky;
+    top: 0;
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+  }
+  header .branding {
+    font-size: 2.9rem;
+    font-weight: 900;
+    letter-spacing: 2.5px;
+  }
+  header .subheading {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #dcdcdc;
+    margin-left: 12px;
+  }
+  nav {
+    display: flex;
+    gap: 28px;
+  }
+  nav a {
+    color: #fefefe;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+  nav a:hover, nav a.active {
+    background-color: #ffdd57;
+    color: #2c2c54;
+  }
+  .nav-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+  }
+  .nav-toggle span {
+    height: 3px;
+    width: 26px;
+    background: #fefefe;
+    margin: 5px 0;
+    border-radius: 3px;
+  }
+  @media (max-width: 768px) {
+    nav {
+      position: fixed;
+      top: 65px;
+      right: 0;
+      background: #3a3a6b;
+      flex-direction: column;
+      width: 220px;
+      height: calc(100vh - 65px);
+      padding-top: 35px;
+      transform: translateX(100%);
+      transition: transform 0.3s ease-in-out;
+      box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+      border-radius: 8px 0 0 8px;
+    }
+    nav.open {
+      transform: translateX(0);
+    }
+    nav a {
+      font-size: 1.35rem;
+      margin-bottom: 28px;
+      padding-left: 24px;
+      border-radius: 0;
+    }
+    .nav-toggle {
+      display: flex;
+    }
+  }
+  /* MAIN CONTENT AREA */
+  main {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 20px;
+  }
+  /* FORM CONTAINER */
+  .form-container {
+    background: rgba(255 255 255 / 0.12);
+    backdrop-filter: blur(14px);
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    width: 380px;
+    max-width: 90vw;
+    padding: 36px 36px 44px 36px;
+    color: #fafafa;
+    position: relative;
+  }
+  .form-container h2 {
+    font-weight: 800;
+    font-size: 2.1rem;
+    margin-bottom: 24px;
+    text-align: center;
+    color: #ffdd57;
+    letter-spacing: 1.2px;
+  }
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: none;
+    margin-bottom: 22px;
+    font-size: 1rem;
+    color: #333;
+  }
+  input::placeholder {
+    color: #999;
+    font-style: italic;
+  }
+  input[type="submit"],
+  button {
+    width: 100%;
+    background: #ffdd57;
+    color: #2c2c54;
+    font-weight: 700;
+    font-size: 1.15rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    padding: 14px 0;
+    box-shadow: 0 5px 10px #ffdd57aa;
+    transition: background-color 0.3s ease;
+  }
+  input[type="submit"]:hover,
+  button:hover {
+    background: #f7c700;
+    box-shadow: 0 7px 15px #f7c700cc;
+  }
+  .form-switch {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.92rem;
+    color: #e6e6e6;
+  }
+  .form-switch span {
+    color: #ffdd57;
+    cursor: pointer;
+    font-weight: 700;
+    user-select: none;
+  }
+  /* Smooth fade effect for form toggling */
+  form, #confirmation {
+    transition: opacity 0.35s ease;
+  }
+  form.hidden, #confirmation.hidden {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+  }
+  form.active-form, #confirmation.active {
+    opacity: 1;
+    pointer-events: all;
+    position: relative;
+  }
+  /* Confirmation page */
+  #confirmation {
+    text-align: center;
+    font-size: 1.15rem;
+    line-height: 1.5;
+  }
+  #confirmation h2 {
+    font-size: 2.3rem;
+    margin-bottom: 26px;
+    color: #ffdd57;
+    user-select: none;
+  }
+  #confirmation p {
+    margin-bottom: 16px;
+  }
+  #confirmation button {
+    max-width: 140px;
+    margin: 18px auto 0 auto;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <span class="branding">LearnX</span>
+    <span class="subheading">Your Friendly Online Learning Platform</span>
+  </div>
+  <div class="nav-toggle" id="navToggle" aria-label="Toggle menu" role="button" tabindex="0" aria-expanded="false" aria-controls="navMenu">
+    <span></span><span></span><span></span>
+  </div>
+  <nav id="navMenu" aria-label="Primary Navigation">
+    <a href="#" class="active" data-target="loginForm">Login</a>
+    <a href="#" data-target="signupForm">Sign Up</a>
+    <a href="#" data-target="registerForm">Register Course</a>
+  </nav>
+</header>
+
+<main>
+  <div class="form-container" role="region" aria-live="polite" aria-atomic="true">
+
+    <!-- LOGIN FORM -->
+    <form id="loginForm" class="active-form" aria-label="Login Form" novalidate>
+      <h2>Welcome Back!</h2>
+      <label for="loginEmail">Email Address</label>
+      <input type="email" id="loginEmail" name="loginEmail" placeholder="you@example.com" autocomplete="username" required />
+      
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" name="loginPassword" placeholder="••••••••" autocomplete="current-password" required />
+      
+      <input type="submit" value="Log In" aria-label="Log in to your account" />
+      <div class="form-switch" aria-live="polite">
+        Don’t have an account? <span role="button" tabindex="0" data-show="signupForm">Sign Up</span>
+      </div>
+    </form>
+
+    <!-- SIGN UP FORM -->
+    <form id="signupForm" class="hidden" aria-label="Sign Up Form" novalidate>
+      <h2>Create Your Account</h2>
+      <label for="signupName">Full Name</label>
+      <input type="text" id="signupName" name="signupName" placeholder="John Doe" autocomplete="name" required />
+      
+      <label for="signupEmail">Email Address</label>
+      <input type="email" id="signupEmail" name="signupEmail" placeholder="you@example.com" autocomplete="email" required />
+      
+      <label for="signupPassword">Password</label>
+      <input type="password" id="signupPassword" name="signupPassword" placeholder="Create a password" autocomplete="new-password" required />
+      
+      <input type="submit" value="Sign Up" aria-label="Create your account" />
+      <div class="form-switch" aria-live="polite">
+        Already have an account? <span role="button" tabindex="0" data-show="loginForm">Log In</span><br />
+        Ready to learn? <span role="button" tabindex="0" data-show="registerForm">Register Course</span>
+      </div>
+    </form>
+
+    <!-- REGISTER COURSE FORM -->
+    <form id="registerForm" class="hidden" aria-label="Course Registration Form" novalidate>
+      <h2>Register for a Course</h2>
+      <label for="regName">Full Name</label>
+      <input type="text" id="regName" name="regName" placeholder="John Doe" required />
+      
+      <label for="regEmail">Email Address</label>
+      <input type="email" id="regEmail" name="regEmail" placeholder="you@example.com" required />
+      
+      <label for="regCourse">Select Course</label>
+      <select id="regCourse" name="regCourse" required>
+        <option value="" disabled selected>Select a course</option>
+        <option value="Web Development">Web Development</option>
+        <option value="Python">Python</option>
+        <option value="Java">Java</option>
+        <option value="Data Science">Data Science</option>
+        <option value="C">C</option>
+        <option value="C++">C++</option>
+        <option value="Others">Others</option>
+      </select>
+      
+      <input type="submit" value="Proceed to Payment" aria-label="Proceed to payment" />
+      <div class="form-switch" aria-live="polite">
+        Want to <span role="button" tabindex="0" data-show="loginForm">Log In</span> or <span role="button" tabindex="0" data-show="signupForm">Sign Up</span> instead?
+      </div>
+    </form>
+
+    <!-- PAYMENT FORM -->
+    <form id="paymentForm" class="hidden" aria-label="Payment Form" novalidate>
+      <h2>Payment Details</h2>
+      <label for="payName">Full Name</label>
+      <input type="text" id="payName" name="payName" readonly />
+      
+      <label for="payCourse">Course</label>
+      <input type="text" id="payCourse" name="payCourse" readonly />
+      
+      <label for="payAmount">Amount (USD)</label>
+      <input type="number" id="payAmount" name="payAmount" readonly />
+      
+      <label for="payCard">Card Number</label>
+      <input type="text" id="payCard" name="payCard" placeholder="1234 5678 9012 3456" required pattern="\d{13,16}" />
+      
+      <label for="payExpiry">Expiry Date</label>
+      <input type="text" id="payExpiry" name="payExpiry" placeholder="MM/YY" required pattern="^(0[1-9]|1[0-2])\/\d{2}$" />
+      
+      <label for="payCVC">CVC</label>
+      <input type="text" id="payCVC" name="payCVC" placeholder="123" required pattern="\d{3}" />
+      
+      <input type="submit" value="Pay Now" aria-label="Submit payment" />
+      <div class="form-switch" aria-live="polite">
+        Change your mind? <span role="button" tabindex="0" data-show="registerForm">Back to Registration</span>
+      </div>
+    </form>
+
+    <!-- CONFIRMATION PAGE -->
+    <section id="confirmation" class="hidden" aria-label="Payment Confirmation">
+      <h2>Payment Successful!</h2>
+      <p><strong>Name:</strong> <span id="confName"></span></p>
+      <p><strong>Course:</strong> <span id="confCourse"></span></p>
+      <p><strong>Amount Paid:</strong> $<span id="confAmount"></span></p>
+      <p>Thank you for your payment. We will contact you shortly via your email.</p>
+      <button id="backToLogin">Back to Login</button>
+    </section>
+  </div>
+</main>
+
+<script>
+  // Elements
+  const navToggle = document.getElementById('navToggle');
+  const navMenu = document.getElementById('navMenu');
+  const navLinks = navMenu.querySelectorAll('a');
+  const forms = ['loginForm', 'signupForm', 'registerForm', 'paymentForm'];
+  const confirmation = document.getElementById('confirmation');
+
+  // Show form function
+  function showForm(formId) {
+    forms.forEach(id => {
+      const form = document.getElementById(id);
+      if (id === formId) {
+        form.style.display = 'block';
+        setTimeout(() => {
+          form.classList.add('active-form');
+          form.classList.remove('hidden');
+        }, 10);
+      } else {
+        form.classList.remove('active-form');
+        form.classList.add('hidden');
+        setTimeout(() => {
+          form.style.display = 'none';
+        }, 350);
+      }
+    });
+    // Hide confirmation if visible
+    confirmation.classList.add('hidden');
+    confirmation.classList.remove('active');
+    confirmation.style.display = 'none';
+
+    // Update nav active states
+    navLinks.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('data-target') === formId);
+    });
+
+    // Close nav on mobile if open
+    navMenu.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', false);
+  }
+
+  // Setup nav toggle for mobile
+  navToggle.addEventListener('click', () => {
+    const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+    navToggle.setAttribute('aria-expanded', !expanded);
+    navMenu.classList.toggle('open');
+  });
+
+  // Close nav on clicking a link & show forms
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = link.getAttribute('data-target');
+      showForm(target);
+    });
+  });
+
+  // Setup form-switch spans click & keyboard
+  document.querySelectorAll('.form-switch span').forEach(span => {
+    span.addEventListener('click', () => {
+      const target = span.getAttribute('data-show');
+      if(target) showForm(target);
+    });
+    span.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const target = span.getAttribute('data-show');
+        if(target) showForm(target);
+      }
+    });
+  });
+
+  // Initial form shown = login
+  showForm('loginForm');
+
+  // Form submissions handling:
+
+  // LOGIN FORM
+  document.getElementById('loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    alert('Login feature is not implemented in this demo. Please use Sign Up or Register Course.');
+  });
+
+  // SIGNUP FORM
+  document.getElementById('signupForm').addEventListener('submit', e => {
+    e.preventDefault();
+    alert('Sign Up feature is not implemented in this demo. Please proceed to Register Course.');
+  });
+
+  // REGISTER FORM
+  const registerForm = document.getElementById('registerForm');
+  const paymentForm = document.getElementById('paymentForm');
+
+  registerForm.addEventListener('submit', e => {
+    e.preventDefault();
+
+    // Validate selected course
+    const courseSelect = document.getElementById('regCourse');
+    if (!courseSelect.value) {
+      alert('Please select a course to continue.');
+      return;
+    }
+    // Get entered data
+    const regName = document.getElementById('regName').value.trim();
+    const regEmail = document.getElementById('regEmail').value.trim();
+    const regCourse = courseSelect.value;
+
+    if (!regName || !regEmail) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    // Fill payment form fields (readonly)
+    document.getElementById('payName').value = regName;
+    document.getElementById('payCourse').value = regCourse;
+
+    // Determine course fee (simple fixed fees example)
+    const courseFees = {
+      'Web Development': 300,
+      'Python': 250,
+      'Java': 280,
+      'Data Science': 350,
+      'C': 200,
+      'C++': 220,
+      'Others': 150
+    };
+    const amount = courseFees[regCourse] || 150;
+    document.getElementById('payAmount').value = amount;
+
+    // Store email for confirmation (hidden input)
+    paymentForm.dataset.email = regEmail;
+
+    showForm('paymentForm');
+  });
+
+  // PAYMENT FORM
+  paymentForm.addEventListener('submit', e => {
+    e.preventDefault();
+
+    // Simple validation (pattern attribute will help but check here too)
+    const card = document.getElementById('payCard').value.trim();
+    const expiry = document.getElementById('payExpiry').value.trim();
+    const cvc = document.getElementById('payCVC').value.trim();
+
+    const cardRegex = /^\d{13,16}$/;
+    const expiryRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+    const cvcRegex = /^\d{3}$/;
+
+    if (!cardRegex.test(card.replace(/\s+/g, ''))) {
+      alert('Please enter a valid card number (13 to 16 digits).');
+      return;
+    }
+    if (!expiryRegex.test(expiry)) {
+      alert('Please enter a valid expiry date (MM/YY).');
+      return;
+    }
+    if (!cvcRegex.test(cvc)) {
+      alert('Please enter a valid 3-digit CVC.');
+      return;
+    }
+
+    // Simulate payment process
+    const name = document.getElementById('payName').value;
+    const course = document.getElementById('payCourse').value;
+    const amount = document.getElementById('payAmount').value;
+
+    // Show confirmation
+    confirmation.querySelector('#confName').textContent = name;
+    confirmation.querySelector('#confCourse').textContent = course;
+    confirmation.querySelector('#confAmount').textContent = amount;
+
+    // Hide all forms
+    forms.forEach(id => {
+      const f = document.getElementById(id);
+      f.classList.remove('active-form');
+      f.classList.add('hidden');
+      setTimeout(() => {
+        f.style.display = 'none';
+      }, 350);
+    });
+
+    // Show confirmation section
+    confirmation.style.display = 'block';
+    setTimeout(() => {
+      confirmation.classList.remove('hidden');
+      confirmation.classList.add('active');
+    }, 10);
+  });
+
+  // Back to login button on confirmation
+  document.getElementById('backToLogin').addEventListener('click', () => {
+    confirmation.classList.remove('active');
+    confirmation.classList.add('hidden');
+    setTimeout(() => {
+      confirmation.style.display = 'none';
+      showForm('loginForm');
+    }, 350);
+  });
+</script>
+
+</body>
+</html>
+
+     
+
